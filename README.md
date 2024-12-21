@@ -1,1 +1,1 @@
-# ServerLingo
+# Lingo

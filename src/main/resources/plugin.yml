@@ -1,0 +1,5 @@
+name: ServerLingo
+version: '${project.version}'
+main: de.relaxogames.bukkit.BukkitLingo
+api-version: '1.21'
+commands:
