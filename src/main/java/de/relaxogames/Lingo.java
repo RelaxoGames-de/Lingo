@@ -1,7 +1,9 @@
 package de.relaxogames;
 
+import de.relaxogames.api.files.FileManager;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
+import de.relaxogames.snorlaxLOG.SnorlaxLOGConfig;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -15,8 +17,10 @@ import java.util.Map;
 public class Lingo {
 
     private static volatile Lingo instance;
-    private static SnorlaxLOG snorlaxLOG;
-    private static File apiHandledFolder;
+    private FileManager fileManager;
+
+    private SnorlaxLOG snorlaxLOG;
+    private File apiHandledFolder;
 
     List<File> fileList;
 
@@ -30,6 +34,9 @@ public class Lingo {
      */
     public Lingo(File pluginFolder) {
         instance = this;
+        fileManager = new FileManager();
+        fileManager.generateFiles();
+        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), true);
         apiHandledFolder = pluginFolder;
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
@@ -117,5 +124,13 @@ public class Lingo {
             if (file.getName().replace(".yml", "").equalsIgnoreCase(locale.getISO())) return file;
         }
         return null;
+    }
+
+    public SnorlaxLOG getSnorlaxLOG() {
+        return snorlaxLOG;
+    }
+
+    public File getApiHandledFolder() {
+        return apiHandledFolder;
     }
 }

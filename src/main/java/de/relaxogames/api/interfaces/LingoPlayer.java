@@ -1,4 +1,4 @@
-package de.relaxogames.interfaces;
+package de.relaxogames.api.interfaces;
 
 import de.relaxogames.languages.Locale;
 import de.relaxogames.snorlaxLOG.RGDBStorage;
