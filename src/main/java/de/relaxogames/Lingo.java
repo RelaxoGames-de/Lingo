@@ -3,7 +3,6 @@ package de.relaxogames;
 import de.relaxogames.api.files.FileManager;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
-import de.relaxogames.snorlaxLOG.SnorlaxLOGConfig;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -33,11 +32,11 @@ public class Lingo {
      * @param pluginFolder is your pluginfolder. This is needed for the Lingo configuration file.
      */
     public Lingo(File pluginFolder) {
+        apiHandledFolder = pluginFolder;
         instance = this;
         fileManager = new FileManager();
         fileManager.generateFiles();
         snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), true);
-        apiHandledFolder = pluginFolder;
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
     }
@@ -74,6 +73,13 @@ public class Lingo {
             System.out.println("***** ADDED " + langFile.getName() + " (" + lng + ") " + "  ["+ cfg.getName() + "]   " + " *****");
             messageList.put(lng, messages);
         }
+    }
+
+    /**
+     * @return true if Lingo is ready to use.
+     */
+    public boolean isReady(){
+        return messageList != null && fileList != null && getSnorlaxLOG().syncTestConnection();
     }
 
     /**

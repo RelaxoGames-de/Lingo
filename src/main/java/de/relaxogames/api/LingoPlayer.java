@@ -26,7 +26,7 @@ public class LingoPlayer implements de.relaxogames.api.interfaces.LingoPlayer {
 
     @Override
     public Locale getLanguage() {
-        return Locale.ENGLISH;
+        return Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
     }
 
     @Override

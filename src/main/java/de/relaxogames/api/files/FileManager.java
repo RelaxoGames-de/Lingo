@@ -4,24 +4,32 @@ import de.relaxogames.Lingo;
 import de.relaxogames.snorlaxLOG.SnorlaxLOGConfig;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.Properties;
 
 public class FileManager {
 
-    private Properties prop;
+    private Properties props;
 
+    /**
+     * This method generates all files needed to run lingo.
+     * @apiNote The files will be created in YOUR plugin folder. CHANGE ONLY THE SETTINGS IN THIS SPECIFIC FILE!
+     */
     public void generateFiles(){
-        File lingoConfig = new File(Lingo.getLibrary().getApiHandledFolder(), "lingo-cfg.properties");
+        File propF = new File(Lingo.getLibrary().getApiHandledFolder().getAbsolutePath(), "snorlaxlabs.properties");
+        System.out.println("FILE ERSTELLT BEI :" + propF.getAbsolutePath());
         try {
-            if (!lingoConfig.exists()) {
-                InputStream in = Lingo.getLibrary().getClass().getResourceAsStream("config.properties");
-                if (in != null) Files.copy(in, lingoConfig.toPath());
-                prop = new Properties();
-                prop.load(in);
+            if (!propF.exists()) {
+                InputStream in = getClass().getClassLoader().getResourceAsStream("snorlaxlabs.properties");
+                if (in != null) Files.copy(in, propF.toPath());
             }
+            InputStream in = new FileInputStream(propF);
+            props = new Properties();
+            props.load(in);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -29,7 +37,7 @@ public class FileManager {
     }
 
     public SnorlaxLOGConfig getSlcConfig(){
-        return new SnorlaxLOGConfig(prop.getProperty("slc-url", "http://rgdb.relaxogames.de"), prop.getProperty("slc-user"), prop.getProperty("slc-pw"));
+        return new SnorlaxLOGConfig(props.getProperty("slc-url", "http://rgdb.relaxogames.de"), props.getProperty("slc-user"), props.getProperty("slc-password"));
     }
 
 }
