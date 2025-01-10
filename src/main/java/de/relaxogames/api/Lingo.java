@@ -1,5 +1,8 @@
 package de.relaxogames.api;
 
+import de.relaxogames.exceptions.LanguageFileNull;
+import de.relaxogames.exceptions.LanguageNotFound;
+import de.relaxogames.exceptions.MessageNotFound;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
 import org.yaml.snakeyaml.Yaml;
@@ -69,7 +72,7 @@ public class Lingo {
             try {
                 is = new FileInputStream(langFile.getAbsolutePath());
             } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new LanguageFileNull(langFile.getName(), langFile.getPath(), "Language file not found!");
             }
             HashMap<String, Object> valuesMap = cfg.load(is);
             messages = new HashMap<>();
@@ -121,15 +124,12 @@ public class Lingo {
      */
     public String getMessage(Locale locale, String message) {
         File localeFile = getLocaleFile(locale);
-        if (localeFile == null) {
-            return "Language " + locale.getISO() + " is not supported!";
-        }
+        if (localeFile == null)throw new LanguageNotFound(locale, "Language file is null");
 
         Map<String, String> localeMessages = messageList.get(locale);
-        if (localeMessages == null) {
-            return "This message has not been set up for your language! (" + message + " / " + localeFile.getName() + ")";
-        }
-        return localeMessages.getOrDefault(message, "This message has not been set up for your language! (" + message + " / " + localeFile.getName() + ")");
+        if (localeMessages == null) throw new MessageNotFound(locale, message);
+        String lngMessage = localeMessages.getOrDefault(message,"This message has not been set up for your language! (" + message + " / " + localeFile.getName() + ")");
+        return lngMessage;
     }
 
     /**
@@ -140,7 +140,7 @@ public class Lingo {
         for (File file : lingoList.values()) {
             if (file.getName().replace(".yml", "").equalsIgnoreCase(locale.getISO())) return file;
         }
-        return null;
+        throw new LanguageNotFound(locale,"Could not find any language file with that locale!");
     }
 
     /**

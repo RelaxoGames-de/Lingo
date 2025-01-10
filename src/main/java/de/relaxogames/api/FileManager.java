@@ -34,8 +34,11 @@ public class FileManager {
         }
     }
 
+    /**
+     * @return true -- if the debug has been enabled
+     */
     protected boolean isDebugging(){
-        return Boolean.getBoolean(props.getProperty("debug-mode", "false"));
+        return Boolean.parseBoolean(props.getProperty("debug-mode", "false"));
     }
 
     public SnorlaxLOGConfig getSlcConfig(){

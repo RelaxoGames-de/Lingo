@@ -17,6 +17,8 @@ dependencies {
     // Implementierungs-Abhängigkeiten
     implementation("de.relaxogames:snorlax-log:1.7")
     implementation("org.yaml:snakeyaml:2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
 }
 
 publishing {
@@ -51,6 +53,8 @@ publishing {
                         id.set("DevTex")
                         name.set("SnorlaxLabs")
                         email.set("support@snorlaxlabs.de")
+                        organizationUrl.set("http://snorlaxlabs.de")
+                        description.set("Copyright © 2025 SnorlaxLabs. All rights reserved.")
                     }
                 }
             }

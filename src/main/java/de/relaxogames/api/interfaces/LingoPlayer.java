@@ -4,8 +4,6 @@ import de.relaxogames.api.Lingo;
 import de.relaxogames.languages.Locale;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class LingoPlayer implements LingoUser {
 
@@ -17,6 +15,7 @@ public class LingoPlayer implements LingoUser {
      */
     public LingoPlayer(UUID uuid){
         this.uuid = uuid;
+        lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
     }
 
     /**
@@ -33,9 +32,9 @@ public class LingoPlayer implements LingoUser {
     @Override
     public Locale getLanguage() {
         if (lng == null) {
-            ExecutorService es = Executors.newSingleThreadExecutor();
-            es.submit(() ->{lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));});
-            es.shutdown();
+            new Thread(() -> {
+                lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
+            }).run();
         }
         return lng;
     }
@@ -46,8 +45,8 @@ public class LingoPlayer implements LingoUser {
      */
     @Override
     public void setLanguage(Locale value) {
-        ExecutorService es = Executors.newSingleThreadExecutor();
-        es.submit(() -> Lingo.getLibrary().getSnorlaxLOG().syncSetSharedEntry(uuid.toString(), "player_locale", value.getISO()));
-        es.shutdown();
+        new Thread(() -> {
+            Lingo.getLibrary().getSnorlaxLOG().syncSetSharedEntry(uuid.toString(), "player_locale", value.getISO());
+        }).start();
     }
 }
