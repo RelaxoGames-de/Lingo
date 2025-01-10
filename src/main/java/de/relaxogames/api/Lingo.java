@@ -1,6 +1,5 @@
-package de.relaxogames;
+package de.relaxogames.api;
 
-import de.relaxogames.api.files.FileManager;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
 import org.yaml.snakeyaml.Yaml;
@@ -13,16 +12,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Lingo is the language API for the RelaxoGamesDE Minigame Network.
+ * Please consider before you import the library to your plugin, that you
+ * are using at least {@link SnorlaxLOG} v1.7!
+ * @author Simon (DevTex) Stier
+ * @see Locale
+ * @see de.relaxogames.api.interfaces.LingoPlayer
+ * @see FileManager
+ */
 public class Lingo {
 
     private static volatile Lingo instance;
+    private SnorlaxLOG snorlaxLOG;
     private FileManager fileManager;
 
-    private SnorlaxLOG snorlaxLOG;
     private File apiHandledFolder;
-
     List<File> fileList;
-
     private static HashMap<Locale, File> lingoList;
     private static HashMap<String, String> messages;
     private static HashMap<Locale, HashMap<String , String>> messageList;
@@ -36,7 +42,7 @@ public class Lingo {
         instance = this;
         fileManager = new FileManager();
         fileManager.generateFiles();
-        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), true);
+        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), false);
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
     }
@@ -54,6 +60,7 @@ public class Lingo {
      */
     public void loadMessages(List<File> fileList) {
         this.fileList = fileList;
+        boolean debug = fileManager.isDebugging();
         for(File langFile : fileList){
             Locale lng = Locale.convertStringToLanguage(langFile.getName().replace(".yml", ""));
             lingoList.put(lng, langFile);
@@ -66,11 +73,15 @@ public class Lingo {
             }
             HashMap<String, Object> valuesMap = cfg.load(is);
             messages = new HashMap<>();
+            if (debug){
+                System.out.println("############################ [LINGO-DEBUG] ############################");
+                System.out.println("File: [" + langFile.getName() + "] \t / \tPath: [" + langFile.getPath() + "]");
+            }
             for (String key : valuesMap.keySet()){
                 messages.put(key, String.valueOf(valuesMap.get(key)).replace("&", "§"));
-                System.out.println(lng.getISO() + "   /   " + key + "   /   " + String.valueOf(valuesMap.get(key)));
+                if (debug)System.out.println(key + "\t » \t" + String.valueOf(valuesMap.get(key)).replace("&", "§"));
             }
-            System.out.println("***** ADDED " + langFile.getName() + " (" + lng + ") " + "  ["+ cfg.getName() + "]   " + " *****");
+            if (debug)System.out.println("############################ " + langFile.getName() + " finished ############################");
             messageList.put(lng, messages);
         }
     }
@@ -132,10 +143,26 @@ public class Lingo {
         return null;
     }
 
+    /**
+     * Reloads all Lingo-messages on the server
+     * and the whole library, this includes the
+     * SnorlaxLOG connection.
+     */
+    public void reload(){
+        fileManager.generateFiles();
+        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), false);
+        messageList = new HashMap<>();
+        lingoList = new HashMap<>();
+        loadMessages(fileList);
+    }
+
     public SnorlaxLOG getSnorlaxLOG() {
         return snorlaxLOG;
     }
 
+    /**
+     * @return the plugin-folder of the API handled plugin
+     */
     public File getApiHandledFolder() {
         return apiHandledFolder;
     }

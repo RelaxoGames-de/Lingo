@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "de.relaxogames"
-version = "inDev-1.4.1"
+version = "inDev-1.5"
 
 repositories {
     mavenCentral()
@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // Implementierungs-Abhängigkeiten
-    implementation("de.relaxogames:snorlax-log:1.6")
+    implementation("de.relaxogames:snorlax-log:1.7")
     implementation("org.yaml:snakeyaml:2.0")
 }
 
@@ -26,7 +26,7 @@ publishing {
 
             groupId = "de.relaxogames"
             artifactId = "LingoAPI"
-            version = "inDev-1.4.1"
+            version = "inDev-1.5"
 
             pom {
                 name.set("Lingo")

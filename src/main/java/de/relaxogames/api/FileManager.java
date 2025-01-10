@@ -1,6 +1,5 @@
-package de.relaxogames.api.files;
+package de.relaxogames.api;
 
-import de.relaxogames.Lingo;
 import de.relaxogames.snorlaxLOG.SnorlaxLOGConfig;
 
 import java.io.File;
@@ -8,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.Properties;
 
 public class FileManager {
@@ -19,7 +17,7 @@ public class FileManager {
      * This method generates all files needed to run lingo.
      * @apiNote The files will be created in YOUR plugin folder. CHANGE ONLY THE SETTINGS IN THIS SPECIFIC FILE!
      */
-    public void generateFiles(){
+    protected void generateFiles(){
         File propF = new File(Lingo.getLibrary().getApiHandledFolder().getAbsolutePath(), "snorlaxlabs.properties");
         System.out.println("FILE ERSTELLT BEI :" + propF.getAbsolutePath());
         try {
@@ -34,6 +32,10 @@ public class FileManager {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    protected boolean isDebugging(){
+        return Boolean.getBoolean(props.getProperty("debug-mode", "false"));
     }
 
     public SnorlaxLOGConfig getSlcConfig(){
