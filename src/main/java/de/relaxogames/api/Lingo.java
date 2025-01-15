@@ -7,7 +7,7 @@ import de.relaxogames.languages.Locale;
 import de.relaxogames.languages.ServerColors;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.yaml.snakeyaml.Yaml;
 
@@ -191,8 +191,8 @@ public class Lingo {
      * @param colors The {@link ServerColors} object that provides the color for the {@link Component}.
      * @return A serialized string representation of the {@link Component} with the specified color.
      */
-    public String convertSerialize(String message, ServerColors colors) {
-        Component component = Component.text(message).color(colors.color());
+    public String convertSerialize(String message, TextColor colors) {
+        Component component = Component.text(message).color(colors);
         return componentSerializer.serialize(component);
     }
 
