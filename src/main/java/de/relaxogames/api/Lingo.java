@@ -4,7 +4,11 @@ import de.relaxogames.exceptions.LanguageFileNull;
 import de.relaxogames.exceptions.LanguageNotFound;
 import de.relaxogames.exceptions.MessageNotFound;
 import de.relaxogames.languages.Locale;
+import de.relaxogames.languages.ServerColors;
 import de.relaxogames.snorlaxLOG.SnorlaxLOG;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -29,6 +33,7 @@ public class Lingo {
     private static volatile Lingo instance;
     private SnorlaxLOG snorlaxLOG;
     private FileManager fileManager;
+    private LegacyComponentSerializer componentSerializer;
 
     private File apiHandledFolder;
     List<File> fileList;
@@ -48,6 +53,7 @@ public class Lingo {
         snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), false);
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
+        componentSerializer = LegacyComponentSerializer.legacySection();
     }
 
     /**
@@ -166,4 +172,28 @@ public class Lingo {
     public File getApiHandledFolder() {
         return apiHandledFolder;
     }
+
+    /**
+     * Converts a {@link Component} into its serialized string representation.
+     *
+     * @param component The {@link Component} to be serialized.
+     * @return A serialized string representation of the given {@link Component}.
+     */
+    public String convertMessage(Component component) {
+        return componentSerializer.serialize(component);
+    }
+
+    /**
+     * Converts a plain text message into a {@link Component} with a specified color,
+     * then serializes it into a string representation.
+     *
+     * @param message The plain text message to be converted into a {@link Component}.
+     * @param colors The {@link ServerColors} object that provides the color for the {@link Component}.
+     * @return A serialized string representation of the {@link Component} with the specified color.
+     */
+    public String convertSerialize(String message, ServerColors colors) {
+        Component component = Component.text(message).color(colors.color());
+        return componentSerializer.serialize(component);
+    }
+
 }

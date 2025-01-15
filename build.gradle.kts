@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "de.relaxogames"
-version = "inDev-1.5"
+version = "inDev-1.6-RC01"
 
 repositories {
     mavenCentral()
@@ -18,7 +18,9 @@ dependencies {
     implementation("de.relaxogames:snorlax-log:1.7")
     implementation("org.yaml:snakeyaml:2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-
+    implementation("net.kyori:adventure-api:4.18.0")
+    implementation("net.kyori:adventure-text-serializer-gson:4.18.0")
+    implementation("net.kyori:adventure-text-serializer-legacy:4.18.0")
 }
 
 publishing {
@@ -28,7 +30,7 @@ publishing {
 
             groupId = "de.relaxogames"
             artifactId = "LingoAPI"
-            version = "inDev-1.5"
+            version = "inDev-1.6-RC01"
 
             pom {
                 name.set("Lingo")

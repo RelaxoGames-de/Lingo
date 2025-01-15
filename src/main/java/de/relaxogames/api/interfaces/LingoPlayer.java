@@ -15,7 +15,6 @@ public class LingoPlayer implements LingoUser {
      */
     public LingoPlayer(UUID uuid){
         this.uuid = uuid;
-        lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
     }
 
     /**

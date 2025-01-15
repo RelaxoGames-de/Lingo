@@ -1,5 +1,7 @@
 package de.relaxogames.languages;
 
+import java.awt.*;
+
 public enum Locale {
 
     system_default("de_DE"),
@@ -22,8 +24,8 @@ public enum Locale {
      * @return the {@link Locale} -- if there is no language with the search index, the system_default language will be returned.
      */
     public static Locale convertStringToLanguage(String ISOShort){
-        for (Locale languages : Locale.values()){
-            if (languages.getISO().equalsIgnoreCase(ISOShort) && languages != system_default){
+        for (Locale languages : Locale.values()) {
+            if (languages.getISO().equalsIgnoreCase(ISOShort) && languages != system_default) {
                 return languages;
             }
         }
