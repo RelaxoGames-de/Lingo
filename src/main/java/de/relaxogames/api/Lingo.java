@@ -5,7 +5,6 @@ import de.relaxogames.exceptions.LanguageNotFound;
 import de.relaxogames.exceptions.MessageNotFound;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.languages.ServerColors;
-import de.relaxogames.snorlaxLOG.SnorlaxLOG;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -20,9 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Lingo is the language API for the RelaxoGamesDE Minigame Network.
- * Please consider before you import the library to your plugin, that you
- * are using at least {@link SnorlaxLOG} v1.7!
  * @author Simon (DevTex) Stier
  * @see Locale
  * @see de.relaxogames.api.interfaces.LingoPlayer
@@ -31,7 +27,6 @@ import java.util.Map;
 public class Lingo {
 
     private static volatile Lingo instance;
-    private SnorlaxLOG snorlaxLOG;
     private FileManager fileManager;
     private LegacyComponentSerializer componentSerializer;
 
@@ -50,7 +45,6 @@ public class Lingo {
         instance = this;
         fileManager = new FileManager();
         fileManager.generateFiles();
-        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), false);
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
         componentSerializer = LegacyComponentSerializer.legacySection();
@@ -99,7 +93,7 @@ public class Lingo {
      * @return true if Lingo is ready to use.
      */
     public boolean isReady(){
-        return messageList != null && fileList != null && getSnorlaxLOG().syncTestConnection();
+        return messageList != null && fileList != null;
     }
 
     /**
@@ -156,14 +150,9 @@ public class Lingo {
      */
     public void reload(){
         fileManager.generateFiles();
-        snorlaxLOG = new SnorlaxLOG(fileManager.getSlcConfig(), false);
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
         loadMessages(fileList);
-    }
-
-    public SnorlaxLOG getSnorlaxLOG() {
-        return snorlaxLOG;
     }
 
     /**

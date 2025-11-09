@@ -15,7 +15,6 @@ repositories {
 
 dependencies {
     // Implementierungs-Abhängigkeiten
-    implementation("de.relaxogames:snorlax-log:1.7")
     implementation("org.yaml:snakeyaml:2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("net.kyori:adventure-api:4.18.0")

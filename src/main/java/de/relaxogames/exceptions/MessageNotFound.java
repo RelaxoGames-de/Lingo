@@ -16,8 +16,8 @@ public class MessageNotFound extends RuntimeException {
 
     @Override
     public void printStackTrace() {
-        super.printStackTrace();
         Logger.getLogger(Prefixes.getLingoPrefix()).log(Level.WARNING, "Message " + missingMessage() + " for " + missingLocale() + " not found");
+        super.printStackTrace();
     }
 
     /**

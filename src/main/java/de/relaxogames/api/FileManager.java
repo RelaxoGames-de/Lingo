@@ -1,7 +1,5 @@
 package de.relaxogames.api;
 
-import de.relaxogames.snorlaxLOG.SnorlaxLOGConfig;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,10 +37,6 @@ public class FileManager {
      */
     protected boolean isDebugging(){
         return Boolean.parseBoolean(props.getProperty("debug-mode", "false"));
-    }
-
-    public SnorlaxLOGConfig getSlcConfig(){
-        return new SnorlaxLOGConfig(props.getProperty("slc-url", "http://rgdb.relaxogames.de"), props.getProperty("slc-user"), props.getProperty("slc-password"));
     }
 
 }

@@ -32,7 +32,8 @@ public class LingoPlayer implements LingoUser {
     public Locale getLanguage() {
         if (lng == null) {
             new Thread(() -> {
-                lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
+                lng = Locale.GERMAN;
+                //lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
             }).run();
         }
         return lng;
@@ -45,7 +46,7 @@ public class LingoPlayer implements LingoUser {
     @Override
     public void setLanguage(Locale value) {
         new Thread(() -> {
-            Lingo.getLibrary().getSnorlaxLOG().syncSetSharedEntry(uuid.toString(), "player_locale", value.getISO());
+            //Lingo.getLibrary().getSnorlaxLOG().syncSetSharedEntry(uuid.toString(), "player_locale", value.getISO());
         }).start();
     }
 }
