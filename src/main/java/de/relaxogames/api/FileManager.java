@@ -39,4 +39,31 @@ public class FileManager {
         return Boolean.parseBoolean(props.getProperty("debug-mode", "false"));
     }
 
+    /**
+     * @return the host from the .properties file
+     */
+    public String host(){
+        return props.getProperty("slc-host");
+    }
+
+    /**
+     * @return the database name form the .properties
+     */
+    public String database(){
+        return props.getProperty("slc-database");
+    }
+
+    /**
+     * @return the database user form the .properties
+     */
+    public String user(){
+        return props.getProperty("slc-user");
+    }
+
+    /**
+     * @return the password for the database form the .properties
+     */
+    public String password(){
+        return props.getProperty("slc-password");
+    }
 }

@@ -5,6 +5,8 @@ import de.relaxogames.exceptions.LanguageNotFound;
 import de.relaxogames.exceptions.MessageNotFound;
 import de.relaxogames.languages.Locale;
 import de.relaxogames.languages.ServerColors;
+import de.relaxogames.sql.LingoSQL;
+import de.relaxogames.sql.SQLConnector;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -45,6 +47,8 @@ public class Lingo {
         instance = this;
         fileManager = new FileManager();
         fileManager.generateFiles();
+        SQLConnector.connect();
+        LingoSQL.initialize();
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
         componentSerializer = LegacyComponentSerializer.legacySection();
@@ -65,8 +69,13 @@ public class Lingo {
         this.fileList = fileList;
         boolean debug = fileManager.isDebugging();
         for(File langFile : fileList){
-            Locale lng = Locale.convertStringToLanguage(langFile.getName().replace(".yml", ""));
+            String lngFileName = langFile.getName().replace(".yml", "");
+            Locale lng = Locale.convertStringToLanguage(lngFileName);
             lingoList.put(lng, langFile);
+            if (lngFileName.equalsIgnoreCase(Locale.system_default.getISO())){
+                lingoList.put(Locale.system_default, langFile);
+                if (debug)System.out.println("File: [" + langFile.getName() + "] \t / \tPath: [" + langFile.getPath() + "] wurde als Fallback-Language gesetzt!");
+            }
             Yaml cfg = new Yaml();
             InputStream is = null;
             try {
@@ -93,7 +102,7 @@ public class Lingo {
      * @return true if Lingo is ready to use.
      */
     public boolean isReady(){
-        return messageList != null && fileList != null;
+        return messageList != null && fileList != null && SQLConnector.conIsActive();
     }
 
     /**

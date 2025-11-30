@@ -1,35 +1,46 @@
 plugins {
     id("java")
-    // Maven Publish Plugin für Artefaktveröffentlichung
     id("maven-publish")
     id("java-library")
 }
 
 group = "de.relaxogames"
-version = "inDev-1.6-RC01"
+version = "inDev-1.7-RC01"
 
 repositories {
     mavenCentral()
     mavenLocal()
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(17)
+}
+
 dependencies {
-    // Implementierungs-Abhängigkeiten
     implementation("org.yaml:snakeyaml:2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("net.kyori:adventure-api:4.18.0")
     implementation("net.kyori:adventure-text-serializer-gson:4.18.0")
     implementation("net.kyori:adventure-text-serializer-legacy:4.18.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.3.2")
+    implementation("com.zaxxer:HikariCP:5.0.1")
 }
 
 publishing {
     publications {
         create<MavenPublication>("lib") {
-            from(components["java"]) // Bindet das Java-Artefakt ein
+            from(components["java"])
 
             groupId = "de.relaxogames"
             artifactId = "LingoAPI"
-            version = "inDev-1.6-RC01"
+            version = "inDev-1.7-RC01"
 
             pom {
                 name.set("Lingo")
@@ -65,8 +76,7 @@ publishing {
     repositories {
         maven {
             name = "local"
-            url = uri(layout.buildDirectory.dir("maven-repo")) // Lokales Test-Repository
+            url = uri(layout.buildDirectory.dir("maven-repo"))
         }
     }
 }
-

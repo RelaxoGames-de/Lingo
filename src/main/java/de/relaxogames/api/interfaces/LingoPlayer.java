@@ -1,11 +1,13 @@
 package de.relaxogames.api.interfaces;
 
-import de.relaxogames.api.Lingo;
 import de.relaxogames.languages.Locale;
+import de.relaxogames.sql.LingoSQL;
 
 import java.util.UUID;
 
 public class LingoPlayer implements LingoUser {
+
+    private LingoSQL sqLingos = new LingoSQL();
 
     UUID uuid;
     Locale lng;
@@ -32,8 +34,7 @@ public class LingoPlayer implements LingoUser {
     public Locale getLanguage() {
         if (lng == null) {
             new Thread(() -> {
-                lng = Locale.GERMAN;
-                //lng = Locale.convertStringToLanguage(Lingo.getLibrary().getSnorlaxLOG().syncGetSharedEntry(uuid.toString(), "player_locale"));
+                sqLingos.loadLocale(getUUID());
             }).run();
         }
         return lng;
