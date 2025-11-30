@@ -1,8 +1,5 @@
 package de.relaxogames.api;
 
-import de.relaxogames.sql.LingoSQL;
-import de.relaxogames.sql.SQLConnector;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

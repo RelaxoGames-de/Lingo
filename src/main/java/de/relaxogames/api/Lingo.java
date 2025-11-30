@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Simon (DevTex) Stier
+ * @author Simon (Seltex) Stier
  * @see Locale
  * @see de.relaxogames.api.interfaces.LingoPlayer
  * @see FileManager
