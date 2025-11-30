@@ -45,7 +45,9 @@ public enum SQLingos {
      * The locale and UUID are provided as parameters in a prepared statement.
      * </p>
      */
-    UPDATE_LINGO_LOCALE("UPDATE `general` SET locale = ? WHERE uuid = ?;");
+    UPDATE_LINGO_LOCALE("UPDATE `general` SET locale = ? WHERE uuid = ?;"),
+    INSERT_LINGO_LOCALE("INSERT INTO `general` (uuid, name, locale, created_at)\n" +
+            "VALUES (?, '', ?, ?);");
 
     /** The raw SQL string associated with this enum constant. */
     private final String sql;

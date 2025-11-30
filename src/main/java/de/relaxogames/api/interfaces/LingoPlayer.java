@@ -16,6 +16,7 @@ public class LingoPlayer implements LingoUser {
      * @param uuid the UUID of the needed player
      */
     public LingoPlayer(UUID uuid){
+        if(!sqLingos.hasEntry(uuid)) sqLingos.insertEntry(uuid);
         this.uuid = uuid;
     }
 
