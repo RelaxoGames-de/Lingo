@@ -47,11 +47,12 @@ public class Lingo {
         instance = this;
         fileManager = new FileManager();
         fileManager.generateFiles();
-        SQLConnector.connect();
-        LingoSQL.initialize();
         messageList = new HashMap<>();
         lingoList = new HashMap<>();
         componentSerializer = LegacyComponentSerializer.legacySection();
+
+        SQLConnector.connect();
+        LingoSQL.initialize();
     }
 
     /**
@@ -194,4 +195,7 @@ public class Lingo {
         return componentSerializer.serialize(component);
     }
 
+    public FileManager getFileManager() {
+        return fileManager;
+    }
 }

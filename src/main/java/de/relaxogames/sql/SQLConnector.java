@@ -3,6 +3,7 @@ package de.relaxogames.sql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.relaxogames.api.FileManager;
+import de.relaxogames.api.Lingo;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ import java.sql.SQLException;
 public class SQLConnector {
 
     private static HikariDataSource dataSource;
-    private static final FileManager fileManagement = new FileManager();
+    private static final FileManager fileManagement = Lingo.getLibrary().getFileManager();
 
     /**
      * Initializes the connection pool if it has not been created yet.
@@ -33,6 +34,7 @@ public class SQLConnector {
      * @throws IllegalStateException if required JDBC driver classes are missing
      */
     public static void connect() {
+        System.out.println("6");
         if (dataSource != null) return;
 
         try {

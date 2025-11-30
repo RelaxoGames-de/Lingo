@@ -1,5 +1,8 @@
 package de.relaxogames.api;
 
+import de.relaxogames.sql.LingoSQL;
+import de.relaxogames.sql.SQLConnector;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +28,10 @@ public class FileManager {
             }
             InputStream in = new FileInputStream(propF);
             props = new Properties();
-            props.load(in);
+
+            try (FileInputStream fis = new FileInputStream(propF)) {
+                props.load(fis);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
