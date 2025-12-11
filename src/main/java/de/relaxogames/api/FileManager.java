@@ -16,7 +16,7 @@ public class FileManager {
      * @apiNote The files will be created in YOUR plugin folder. CHANGE ONLY THE SETTINGS IN THIS SPECIFIC FILE!
      */
     protected void generateFiles(){
-        File propF = new File(Lingo.getLibrary().getApiHandledFolder().getAbsolutePath(), "snorlaxlabs.properties");
+        File propF = new File(Lingo.getLibrary().getApiHandledFolder().getPath(), "snorlaxlabs.properties");
         System.out.println("FILE ERSTELLT BEI :" + propF.getAbsolutePath());
         try {
             if (!propF.exists()) {
