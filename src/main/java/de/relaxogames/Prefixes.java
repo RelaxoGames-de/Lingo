@@ -18,4 +18,8 @@ public class Prefixes {
     public static String getLingoPrefix() {
         return Lingo.getLibrary().convertMessage(lingoPrefix);
     }
+
+    public static String logPrefix() {
+        return "LINGO";
+    }
 }

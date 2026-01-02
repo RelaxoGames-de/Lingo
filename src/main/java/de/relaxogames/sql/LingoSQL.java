@@ -1,5 +1,6 @@
 package de.relaxogames.sql;
 
+import de.relaxogames.api.FileManager;
 import de.relaxogames.exceptions.DriverLostConnection;
 import de.relaxogames.languages.Locale;
 
@@ -23,6 +24,8 @@ import java.util.UUID;
  * </p>
  */
 public class LingoSQL {
+
+    private static final FileManager FM = new FileManager();
 
     /** Shared static database connection obtained from {@link SQLConnector}. */
     static Connection con;
@@ -161,10 +164,18 @@ public class LingoSQL {
      */
     private static boolean checkConnection() throws SQLException {
         if (con == null || con.isClosed()) {
-            throw new DriverLostConnection(
-                    "Connection to RelaxoGames database is closed! " +
-                            "Canceled current action! Is connection alive?"
-            );
+            int fails = 0;
+            for (int i = 1; i <= FM.timeoutTryAmount(); i++) {
+                SQLConnector.connect();
+                if (!con.isClosed() || con != null)break;
+                fails++;
+            }
+            if (fails == FM.timeoutTryAmount()) {
+                throw new DriverLostConnection(
+                        "Connection to RelaxoGames database is closed! " +
+                                "Canceled current action! Is connection alive?"
+                );
+            }
         }
         return true;
     }

@@ -34,7 +34,6 @@ public class SQLConnector {
      * @throws IllegalStateException if required JDBC driver classes are missing
      */
     public static void connect() {
-        System.out.println("6");
         if (dataSource != null) return;
 
         try {
@@ -47,6 +46,7 @@ public class SQLConnector {
         config.setJdbcUrl("jdbc:mariadb://" + fileManagement.host() + ":3306/" + fileManagement.database());
         config.setUsername(fileManagement.user());
         config.setPassword(fileManagement.password());
+        config.setPoolName("SnorlaxLingo Helper");
         config.setMaximumPoolSize(10);
 
         dataSource = new HikariDataSource(config);

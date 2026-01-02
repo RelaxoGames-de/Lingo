@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class Lingo {
 
+    private static final int version = 2;
+
     private static volatile Lingo instance;
     private FileManager fileManager;
     private LegacyComponentSerializer componentSerializer;
@@ -197,5 +199,12 @@ public class Lingo {
 
     public FileManager getFileManager() {
         return fileManager;
+    }
+
+    /**
+     * @return the proper version of the .properties file
+     */
+    public static int getVersion(){
+        return version;
     }
 }
