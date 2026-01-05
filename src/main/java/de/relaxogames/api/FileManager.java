@@ -117,7 +117,28 @@ public class FileManager {
         return Integer.parseInt(props.getProperty(PROPERTIES.PROP_VERSION.getField()));
     }
 
-
+    /**
+     * Loads and updates the application's properties file.
+     * <p>
+     * This method performs the following steps:
+     * <ul>
+     *     <li>Initializes and loads the {@link Properties} object from the properties file
+     *         if it has not been loaded yet</li>
+     *     <li>Ensures that all required property keys defined in {@link PROPERTIES}
+     *         are present, inserting their default values if missing</li>
+     *     <li>Updates the stored configuration version to match the current
+     *         application version</li>
+     *     <li>Persists the properties file to disk only if changes were made</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * If the properties file already contains all required keys, no disk write
+     * is performed. This minimizes unnecessary I/O operations.
+     * </p>
+     *
+     * @throws RuntimeException if the properties file cannot be read from or written to
+     */
     public void updateProperties(){
         if (props == null){
             props = new Properties();

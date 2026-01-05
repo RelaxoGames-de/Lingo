@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.relaxogames.api.FileManager;
 import de.relaxogames.api.Lingo;
+import de.relaxogames.exceptions.DriverLostConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,13 +34,19 @@ public class SQLConnector {
      *
      * @throws IllegalStateException if required JDBC driver classes are missing
      */
-    public static void connect() {
-        if (dataSource != null) return;
+    public static Connection connect() {
+        if (dataSource != null) {
+            try {
+                return dataSource.getConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         try {
             Class.forName("org.mariadb.jdbc.Driver"); // Required for some environments
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("MariaDB JDBC Driver could not be loaded.", e);
+            throw new DriverLostConnection("MariaDB JDBC Driver could not be loaded.", e);
         }
 
         HikariConfig config = new HikariConfig();
@@ -50,6 +57,11 @@ public class SQLConnector {
         config.setMaximumPoolSize(10);
 
         dataSource = new HikariDataSource(config);
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -1,7 +1,6 @@
 package de.relaxogames.sql;
 
 import de.relaxogames.api.FileManager;
-import de.relaxogames.exceptions.DriverLostConnection;
 import de.relaxogames.languages.Locale;
 
 import java.sql.*;
@@ -27,17 +26,6 @@ public class LingoSQL {
 
     private static final FileManager FM = new FileManager();
 
-    /** Shared static database connection obtained from {@link SQLConnector}. */
-    static Connection con;
-
-    static {
-        try {
-            con = SQLConnector.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to establish initial database connection", e);
-        }
-    }
-
     /**
      * Initializes the locale storage table in the database if it does not already exist.
      * <p>
@@ -46,9 +34,8 @@ public class LingoSQL {
      * </p>
      */
     public static void initialize() {
-        try {
-            checkConnection();
-            Statement st = con.createStatement();
+        try (Connection dbConnection = connection()){
+            Statement st = dbConnection.createStatement();
             st.execute(SQLingos.CREATE_LINGO_FIELD.getSql());
         } catch (SQLException e) {
             throw new RuntimeException("Failed to initialize locale table", e);
@@ -69,8 +56,7 @@ public class LingoSQL {
      */
     public Locale loadLocale(UUID uuid) {
         try {
-            checkConnection();
-            try (PreparedStatement pst = con.prepareStatement(SQLingos.SELECT_LINGO_LOCALE.getSql())) {
+            try (Connection dbConnection = connection(); PreparedStatement pst = dbConnection.prepareStatement(SQLingos.SELECT_LINGO_LOCALE.getSql())) {
                 pst.setString(1, uuid.toString());
                 ResultSet set = pst.executeQuery();
                 if (!set.next()) return Locale.system_default;
@@ -93,8 +79,7 @@ public class LingoSQL {
      */
     public void setLocale(UUID uuid, Locale locale) {
         try {
-            checkConnection();
-            try (PreparedStatement pst = con.prepareStatement(SQLingos.UPDATE_LINGO_LOCALE.getSql())) {
+            try (Connection dbConnection = connection(); PreparedStatement pst = dbConnection.prepareStatement(SQLingos.UPDATE_LINGO_LOCALE.getSql())) {
                 pst.setString(1, locale.getISO());
                 pst.setString(2, uuid.toString());
                 pst.execute();
@@ -116,8 +101,7 @@ public class LingoSQL {
      */
     public boolean hasEntry(UUID uuid) {
         try {
-            checkConnection();
-            try (PreparedStatement pst = con.prepareStatement(SQLingos.SELECT_LINGO_LOCALE.getSql())) {
+            try (Connection dbConnection = connection(); PreparedStatement pst = dbConnection.prepareStatement(SQLingos.SELECT_LINGO_LOCALE.getSql())) {
                 pst.setString(1, uuid.toString());
                 ResultSet set = pst.executeQuery();
                 return set.next();
@@ -139,8 +123,7 @@ public class LingoSQL {
      */
     public void insertEntry(UUID uuid) {
         try {
-            checkConnection();
-            try (PreparedStatement pst = con.prepareStatement(SQLingos.INSERT_LINGO_LOCALE.getSql())) {
+            try (Connection dbConnection = connection(); PreparedStatement pst = dbConnection.prepareStatement(SQLingos.INSERT_LINGO_LOCALE.getSql())) {
                 pst.setString(1, uuid.toString());
                 pst.setString(2, Locale.system_default.getISO());
                 pst.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
@@ -152,35 +135,27 @@ public class LingoSQL {
     }
 
     /**
-     * Checks whether the current database connection is active and valid.
+     * Retrieves a database connection from the configured HikariCP connection pool.
      * <p>
-     * If the connection is {@code null} or closed, a {@link DriverLostConnection} exception
-     * is thrown to indicate that database operations cannot proceed.
+     * Each invocation returns a <em>new pooled connection</em> which must be closed
+     * after use. Closing the connection does <strong>not</strong> terminate the
+     * physical database connection; instead, it returns the connection back to
+     * the pool for reuse.
      * </p>
      *
-     * @return {@code true} if the connection is active
-     * @throws SQLException         if an I/O error occurs while checking the connection
-     * @throws DriverLostConnection if the connection is null or closed
+     * <p>
+     * This method does not perform any manual connection validation or reconnection
+     * logic. Connection health checks and automatic recovery are fully handled by
+     * HikariCP itself.
+     * </p>
+     *
+     * @return an active {@link Connection} from the connection pool
+     * @throws SQLException if a database access error occurs or the pool
+     *                      cannot provide a connection
+     * @throws IllegalStateException if the connection pool has not been initialized
+     *                              prior to calling this method
      */
-    private static boolean checkConnection() throws SQLException {
-        Connection testedConnection = SQLConnector.getConnection();
-        if (testedConnection == null || testedConnection.isClosed()) {
-            int fails = 0;
-            for (int i = 1; i <= FM.timeoutTryAmount(); i++) {
-                SQLConnector.connect();
-                if (!testedConnection.isClosed() && testedConnection != null){
-                    con = testedConnection;
-                    break;
-                }
-                fails++;
-            }
-            if (fails == FM.timeoutTryAmount()) {
-                throw new DriverLostConnection(
-                        "Connection to RelaxoGames database is closed! " +
-                                "Canceled current action! Is connection alive?"
-                );
-            }
-        }
-        return true;
+    private static Connection connection() throws SQLException {
+        return SQLConnector.getConnection();
     }
 }
