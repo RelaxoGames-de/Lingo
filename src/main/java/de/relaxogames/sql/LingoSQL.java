@@ -163,11 +163,15 @@ public class LingoSQL {
      * @throws DriverLostConnection if the connection is null or closed
      */
     private static boolean checkConnection() throws SQLException {
-        if (con == null || con.isClosed()) {
+        Connection testedConnection = SQLConnector.getConnection();
+        if (testedConnection == null || testedConnection.isClosed()) {
             int fails = 0;
             for (int i = 1; i <= FM.timeoutTryAmount(); i++) {
                 SQLConnector.connect();
-                if (!con.isClosed() || con != null)break;
+                if (!testedConnection.isClosed() && testedConnection != null){
+                    con = testedConnection;
+                    break;
+                }
                 fails++;
             }
             if (fails == FM.timeoutTryAmount()) {
