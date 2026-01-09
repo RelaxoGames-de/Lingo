@@ -8,6 +8,8 @@ import de.relaxogames.languages.ServerColors;
 import de.relaxogames.sql.LingoSQL;
 import de.relaxogames.sql.SQLConnector;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.yaml.snakeyaml.Yaml;
@@ -133,7 +135,9 @@ public class Lingo {
      * @param message is the message key: <message-key> <message-content>
      * @return The translated message as a {@link String}
      * @apiNote This method won't replace any placeholders or color codes!
+     * @deprecated Use {@code getSerialized()} instead!
      */
+    @Deprecated
     public String getMessage(Locale locale, String message) {
         File localeFile = getLocaleFile(locale);
         if (localeFile == null)throw new LanguageNotFound(locale, "Language file is null");
@@ -195,6 +199,75 @@ public class Lingo {
     public String convertSerialize(String message, TextColor colors) {
         Component component = Component.text(message).color(colors);
         return componentSerializer.serialize(component);
+    }
+
+    /**
+     * Converts a message containing custom color tags into an Adventure Component.
+     *
+     * @param message the raw message
+     * @return parsed {@link Component}
+     */
+    public Component convertSerialize(String message) {
+        TextComponent.Builder builder = Component.text();
+
+
+        TextColor defaultColor = NamedTextColor.GRAY;
+        TextColor currentColor = defaultColor;
+
+
+        int index = 0;
+        while (index < message.length()) {
+            int start = message.indexOf('<', index);
+
+
+            if (start == -1) {
+                builder.append(Component.text(message.substring(index), currentColor));
+                break;
+            }
+
+
+            int end = message.indexOf('>', start);
+            if (end == -1) {
+                builder.append(Component.text(message.substring(index), currentColor));
+                break;
+            }
+
+
+            if (start > index) {
+                builder.append(Component.text(message.substring(index, start), currentColor));
+            }
+
+
+            String tag = message.substring(start + 1, end);
+
+
+            if (tag.equalsIgnoreCase("RESET")) {
+                currentColor = defaultColor;
+            } else {
+                try {
+                    currentColor = ServerColors.valueOf(tag).color();
+                } catch (IllegalArgumentException ignored) {
+                    builder.append(Component.text("<" + tag + ">", currentColor));
+                }
+            }
+
+
+            index = end + 1;
+        }
+
+
+        return builder.build();
+    }
+
+    /**
+     * Returns a localized and colorized component for the given key.
+     *
+     * @param locale the target language
+     * @param key the message key
+     * @return formatted {@link Component}
+     */
+    public Component getSerialized(Locale locale, String key) {
+        return convertSerialize(getMessage(locale, key));
     }
 
     public FileManager getFileManager() {
