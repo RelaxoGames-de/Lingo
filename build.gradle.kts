@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.relaxogames"
-version = "inDev-1.7-RC02"
+version = "inDev-1.7-RC03"
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ publishing {
 
             groupId = "de.relaxogames"
             artifactId = "LingoAPI"
-            version = "inDev-1.7-RC02"
+            version = "inDev-1.7-RC03"
 
             pom {
                 name.set("Lingo")
