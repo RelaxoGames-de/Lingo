@@ -28,12 +28,13 @@ import java.util.Map;
  * @see de.relaxogames.api.interfaces.LingoPlayer
  * @see FileManager
  */
-public class Lingo {
+public class Lingo implements AutoCloseable {
 
     private static final int version = 2;
 
     private static volatile Lingo instance;
     private FileManager fileManager;
+    private LocaleService localeService;
     private LegacyComponentSerializer componentSerializer;
 
     private File apiHandledFolder;
@@ -47,16 +48,37 @@ public class Lingo {
      * @param pluginFolder is your pluginfolder. This is needed for the Lingo configuration file.
      */
     public Lingo(File pluginFolder) {
-        apiHandledFolder = pluginFolder;
-        instance = this;
-        fileManager = new FileManager();
-        fileManager.generateFiles();
-        messageList = new HashMap<>();
-        lingoList = new HashMap<>();
-        componentSerializer = LegacyComponentSerializer.legacySection();
+        synchronized (Lingo.class) {
+            if (instance != null) instance.close();
+            apiHandledFolder = pluginFolder;
+            instance = this;
+            try {
+                fileManager = new FileManager();
+                fileManager.generateFiles();
+                messageList = new HashMap<>();
+                lingoList = new HashMap<>();
+                componentSerializer = LegacyComponentSerializer.legacySection();
+                SQLConnector.initialize(fileManager);
+                LingoSQL.initialize();
+                localeService = new LocaleService(new LingoSQL());
+            } catch (RuntimeException e) {
+                SQLConnector.close();
+                instance = null;
+                throw e;
+            }
+        }
+    }
 
-        SQLConnector.connect();
-        LingoSQL.initialize();
+    public LocaleService getLocaleService() { return localeService; }
+
+    /** Stop pending database work and release the pool. Call on plugin shutdown. */
+    @Override public void close() {
+        synchronized (Lingo.class) {
+            if (instance != this) return;
+            if (localeService != null) localeService.close();
+            SQLConnector.close();
+            instance = null;
+        }
     }
 
     /**
@@ -142,7 +164,8 @@ public class Lingo {
         File localeFile = getLocaleFile(locale);
         if (localeFile == null)throw new LanguageNotFound(locale, "Language file is null");
 
-        Map<String, String> localeMessages = messageList.get(locale);
+        Map<String, String> localeMessages = messageList.get(locale == Locale.system_default
+                ? Locale.convertStringToLanguage(locale.getISO()) : locale);
         if (localeMessages == null) throw new MessageNotFound(locale, message);
         String lngMessage = localeMessages.getOrDefault(message,"This message has not been set up for your language! (" + message + " / " + localeFile.getName() + ")");
         return lngMessage;

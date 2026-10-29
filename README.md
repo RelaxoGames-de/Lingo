@@ -27,3 +27,9 @@ If you encounter any issues or have questions regarding Lingo, please feel free 
 
 - [@SELTEX](https://github.com/Seltexx) (SnorlaxLabs)
 - [@jotrorox](https://github.com/Jotrorox) (SnorlaxLabs)
+
+## Player locales and shutdown
+
+`LingoPlayer.getLanguage()` never waits for the database. It returns the shared cached locale, or `Locale.system_default` while the first lookup is pending. Players constructed with the same UUID share that cache. Use `getLanguageAsync()` when a result must reflect the database lookup; its future reports database errors and its callbacks may run on the database worker, so schedule Minecraft API calls on the server thread. A failed lookup can be retried by calling again.
+
+`setLanguage()` updates the cache immediately and queues the database write. Use `LingoPlayer.setLanguageAsync()` to observe whether the write succeeded. Writes are processed in order. Call `Lingo.close()` on plugin shutdown to drain pending work and close the connection pool. Constructing a new `Lingo` replaces and closes the previous instance.

@@ -1,55 +1,32 @@
 package de.relaxogames.api.interfaces;
 
+import de.relaxogames.api.Lingo;
+import de.relaxogames.api.LocaleService;
 import de.relaxogames.languages.Locale;
-import de.relaxogames.sql.LingoSQL;
-
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class LingoPlayer implements LingoUser {
+    private final UUID uuid;
+    private final LocaleService locales;
 
-    private LingoSQL sqLingos = new LingoSQL();
-
-    UUID uuid;
-    Locale lng;
-
-    /**
-     * @param uuid the UUID of the needed player
-     */
-    public LingoPlayer(UUID uuid){
-        if(!sqLingos.hasEntry(uuid)) sqLingos.insertEntry(uuid);
-        this.uuid = uuid;
+    public LingoPlayer(UUID uuid) {
+        this.uuid = Objects.requireNonNull(uuid);
+        this.locales = Objects.requireNonNull(Lingo.getLibrary(), "Lingo is not initialized").getLocaleService();
     }
 
-    /**
-     * @return the players UUID
-     */
-    @Override
-    public UUID getUUID() {
-        return uuid;
-    }
+    @Override public UUID getUUID() { return uuid; }
 
-    /**
-     * @return the {@link Locale} of a player
-     */
-    @Override
-    public Locale getLanguage() {
-        if (lng == null) {
-            new Thread(() -> {
-                lng = sqLingos.loadLocale(getUUID());
-            }).run();
-        }
-        return lng;
-    }
+    /** Returns the shared cached locale immediately, or system_default while it loads. */
+    @Override public Locale getLanguage() { return locales.get(uuid); }
 
-    /**
-     * This method sets the value of a player locale
-     * @param value is the new language that should be used
-     */
-    @Override
-    public void setLanguage(Locale value) {
-        new Thread(() -> {
-            sqLingos.setLocale(getUUID(), value);
-            lng = sqLingos.loadLocale(getUUID());
-        }).start();
-    }
+    /** Completes with the loaded locale, or exceptionally on database failure. */
+    @Override public CompletableFuture<Locale> getLanguageAsync() { return locales.getAsync(uuid); }
+
+    /** Updates the cache immediately and saves asynchronously. */
+    @Override public void setLanguage(Locale value) { locales.set(uuid, value); }
+
+    /** Updates the cache immediately and reports when the database write finishes. */
+    public CompletableFuture<Void> setLanguageAsync(Locale value) { return locales.set(uuid, value); }
 }

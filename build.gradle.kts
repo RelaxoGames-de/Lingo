@@ -31,6 +31,9 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-legacy:4.18.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.3.2")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("com.h2database:h2:2.3.232")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 publishing {
@@ -80,3 +83,5 @@ publishing {
         }
     }
 }
+
+tasks.test { useJUnitPlatform() }

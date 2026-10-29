@@ -46,7 +46,7 @@ public enum SQLingos {
      * </p>
      */
     UPDATE_LINGO_LOCALE("UPDATE `general` SET locale = ? WHERE uuid = ?;"),
-    INSERT_LINGO_LOCALE("INSERT INTO `general` (uuid, name, locale, created_at)\n" +
+    INSERT_LINGO_LOCALE("INSERT IGNORE INTO `general` (uuid, name, locale, created_at)\n" +
             "VALUES (?, '', ?, ?);");
 
     /** The raw SQL string associated with this enum constant. */
